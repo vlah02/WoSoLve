@@ -1,0 +1,324 @@
+<!-- WoSolve -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WoSoLve</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="bg-gray-100 h-screen flex justify-center items-center">
+    <div class="container mx-auto px-4">
+        <div class="w-full max-w-xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-8">
+                <h1 class="text-3xl font-bold text-center text-gray-800 mb-4">WoSoLve</h1>
+
+                <form method="post" class="flex flex-col items-center">
+                    <div class="flex items-center mb-4">
+                        <label style="user-select: none;" class="text-sm font-medium text-gray-700 mr-3">Enter your guess:</label>
+                        <div id="guessContainer" class="flex">
+                        </div>      
+                        <input type="hidden" name="guess" id="hiddenGuess">                      
+                    </div> 
+                    <div class="flex justify-center space-x-4 mb-4">
+                        <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700">Submit</button>
+                        <button type="button" onclick="window.location.href='/reset'" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:bg-red-700">Reset</button>
+                    </div>
+                </form>
+
+                <div id="keyboard" class="mt-4 space-y-2">
+                    <div class="flex justify-center gap-2">
+                        <button class="key">Q</button>
+                        <button class="key">W</button>
+                        <button class="key">E</button>
+                        <button class="key">R</button>
+                        <button class="key">T</button>
+                        <button class="key">Y</button>
+                        <button class="key">U</button>
+                        <button class="key">I</button>
+                        <button class="key">O</button>
+                        <button class="key">P</button>
+                    </div>
+                    <div class="flex justify-center gap-2"> 
+                        <button class="key">A</button>
+                        <button class="key">S</button>
+                        <button class="key">D</button>
+                        <button class="key">F</button>
+                        <button class="key">G</button>
+                        <button class="key">H</button>
+                        <button class="key">J</button>
+                        <button class="key">K</button>
+                        <button class="key">L</button>
+                    </div>
+                    <div class="flex justify-center gap-2">
+                        <button class="key">Z</button>
+                        <button class="key">X</button>
+                        <button class="key">C</button>
+                        <button class="key">V</button>
+                        <button class="key">B</button>
+                        <button class="key">N</button>
+                        <button class="key">M</button>
+                    </div>
+                </div>
+
+                <div id="colorPopup" class="hidden">
+                    <button onclick="addColorToInput('+')" class="color-button bg-green-500"><i class="fas fa-check"></i></button>
+                    <button onclick="addColorToInput('*')" class="color-button bg-yellow-500"><i class="fas fa-question"></i></button>
+                    <button onclick="addColorToInput('-')" class="color-button bg-red-500"><i class="fas fa-times"></i></button>
+                </div>
+                
+                <p class="text-sm text-gray-500 mt-3 text-center">{{ message }}</p>
+                {% if random_word %}
+                    <p class="text-lg text-indigo-600 font-semibold mt-3 text-center">Random word to try: {{ random_word }}</p>
+                {% endif %}
+                {% if words %}
+                    <div class="mt-6 h-48 overflow-y-auto">
+                        <ul class="list-disc list-inside">
+                        {% for word in words %}
+                            <li class="text-gray-700">{{ word }}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+        
+    <script>
+        var selectedLetter = '';
+
+        function addLetterToInput(letter, colorCode) {
+            var guessContainer = document.getElementById('guessContainer');
+            var hiddenGuess = document.getElementById('hiddenGuess');
+
+            if (guessContainer.children.length < 5) { 
+                var box = document.createElement('div');
+                box.classList.add('guess-box');
+                box.textContent = letter.toUpperCase();
+                applyColorToBox(box, colorCode);
+                guessContainer.appendChild(box);
+
+                hiddenGuess.value += letter + colorCode;
+            }
+        }
+
+        function applyColorToBox(box, colorCode) {
+            switch(colorCode) {
+                case '+':
+                    box.style.backgroundColor = '#48bb78';
+                    break;
+                case '*':
+                    box.style.backgroundColor = '#ecc94b';
+                    break;
+                case '-':
+                    box.style.backgroundColor = '#f56565';
+                    break;
+            }
+        }
+
+        function removeLastLetter() {
+            var guessContainer = document.getElementById('guessContainer');
+            var hiddenGuess = document.getElementById('hiddenGuess');
+
+            if (guessContainer.children.length > 0) {
+                guessContainer.removeChild(guessContainer.lastChild);
+
+                if (hiddenGuess.value.length > 0) {
+                    hiddenGuess.value = hiddenGuess.value.slice(0, -2);
+                }
+            }
+        }
+
+    
+        function chooseColor(letter, event) {
+            selectedLetter = letter;
+            var colorPopup = document.getElementById('colorPopup');
+    
+            if (event) {
+                var buttonRect = event.target.getBoundingClientRect();
+                colorPopup.style.top = (buttonRect.top + window.scrollY - buttonRect.height) + 'px';
+                colorPopup.style.left = (buttonRect.left + buttonRect.width / 2) + 'px';
+            } else {
+                colorPopup.style.top = '50%';
+                colorPopup.style.left = '50%';
+                colorPopup.style.transform = 'translate(-50%, -50%)';
+            }
+            
+            colorPopup.style.display = 'flex';
+        }
+    
+        function addColorToInput(symbol) {
+            addLetterToInput(selectedLetter, symbol);
+            document.getElementById('colorPopup').style.display = 'none';
+        }
+    
+        window.addEventListener('keydown', function(event) {
+            const key = event.key.toLowerCase();
+            const isPrintableChar = key.length === 1 && /[a-z]/i.test(key);
+            
+            if (isPrintableChar) {
+                event.preventDefault(); 
+                chooseColor(key); 
+            } else if (event.key.toLowerCase() === 'backspace') {
+                event.preventDefault();
+                removeLastLetter();
+            } else if (key === 'enter') {
+                event.preventDefault();
+                document.querySelector('[type="submit"]').click();
+            } else if (key === 'escape') {
+                window.location.href='/reset';
+            }
+        });
+        document.addEventListener('click', function(event) {
+            var colorPopup = document.getElementById('colorPopup');
+            var isClickInsideElement = colorPopup.contains(event.target) || event.target.classList.contains('key');
+            if (!isClickInsideElement) {
+                colorPopup.style.display = 'none';
+            }
+        });
+    
+        document.querySelectorAll('.key').forEach(button => {
+            button.addEventListener('click', function(event) {
+                chooseColor(this.textContent.toLowerCase(), event);
+            });
+        });
+        document.querySelector('form').addEventListener('submit', function(event) {
+            var guessValue = document.getElementById('hiddenGuess').value;
+        });
+
+    </script>
+        
+    <style>
+        .guess-box {
+            transition: all 0.3s ease;
+            width: 2.5rem; 
+            height: 2.5rem;
+            border: 2px solid transparent;
+            border-radius: 0.375rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            margin: 4px;
+            text-align: center;
+            font-size: 1.5rem;
+            cursor: default; 
+            color: white; 
+        }
+
+        .guess-box[data-color="+"] {
+            color: white; 
+        }
+
+        .guess-box[data-color="*"] {
+            color: white; 
+        }
+
+        .guess-box[data-color="-"] {
+            color: white; 
+        }
+
+        .key {
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border: 2px solid transparent;
+            border-radius: 0.375rem; 
+            background-color: #e2e2e2;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .key:hover {
+            background-color: #cacaca;
+            border-color: #a0a0a0;
+        }
+        
+        #guess {
+            pointer-events: none;
+        }
+
+        #colorPopup {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: center;
+            gap: 1px;
+            position: absolute;
+            transform: translateX(-50%); 
+            padding: 4px;
+            border-radius: 6px;
+            background-color: rgba(255, 255, 255, 0); 
+        }
+
+        #colorPopup button {
+            margin: 0 5px;
+        }
+
+        .color-button {
+            padding: 8px 12px;
+            margin: 4px;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        #colorPopup.hidden {
+            display: none;
+        }
+
+        .color-button {
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border: 2px solid transparent;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            text-align: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 4px;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .color-button.bg-green-500 {
+            background-color: #48bb78; 
+        }
+        .color-button.bg-yellow-500 {
+            background-color: #ecc94b; 
+        }
+        .color-button.bg-red-500 {
+            background-color: #f56565;
+        }
+
+        .color-button.bg-green-500:hover {
+            background-color: #3a8b5e; 
+        }
+        .color-button.bg-yellow-500:hover {
+            background-color: #d1a825; 
+        }
+        .color-button.bg-red-500:hover {
+            background-color: #dc2626; 
+        }
+
+        .color-button i {
+            pointer-events: none;
+        }
+
+    </style>
+</body>
+</html>
+
+
