@@ -6,12 +6,48 @@
     <title>WoSoLve</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body.dark-mode {
+            background-color: #1a202c;
+            color: #a0aec0;
+        }
+        .dark-mode .bg-white {
+            background-color: #2d3748;
+        }
+        .dark-mode .text-gray-800 {
+            color: #a0aec0;
+        }
+        .dark-mode .text-gray-700 {
+            color: #cbd5e0;
+        }
+        .dark-mode .text-gray-500 {
+            color: #a0aec0;
+        }
+        .dark-mode .guess-box {
+            color: white;
+        }
+        .dark-mode .bg-gray-100 {
+            background-color: #2d3748;
+        }
+        .theme-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 h-screen flex justify-center items-center">
+    <div class="theme-toggle">
+        <button id="theme-toggle" class="text-gray-500 focus:outline-none">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
     <div class="container mx-auto px-4">
         <div class="w-full max-w-xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
             <div class="p-8">
-                <h1 class="text-3xl font-bold text-center text-gray-800 mb-4">WoSoLve</h1>
+                <div class="flex justify-center mb-4">
+                    <h1 class="text-3xl font-bold text-gray-800">WoSoLve</h1>
+                </div>
 
                 <form method="post" class="flex flex-col items-center">
                     <div class="flex items-center mb-4">
@@ -196,6 +232,20 @@
 
         document.querySelector('form').addEventListener('submit', function(event) {
             var guessValue = document.getElementById('hiddenGuess').value;
+        });
+
+        // Dark mode toggle
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
         });
     </script>
 
