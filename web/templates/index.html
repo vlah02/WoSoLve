@@ -14,17 +14,12 @@
         .dark-mode .bg-white {
             background-color: #2d3748;
         }
-        .dark-mode .text-gray-800 {
-            color: #a0aec0;
+        .dark-mode .text-gray-800, .dark-mode .text-gray-700, .dark-mode .text-gray-500 {
+            color: #ffffff;
         }
-        .dark-mode .text-gray-700 {
-            color: #cbd5e0;
-        }
-        .dark-mode .text-gray-500 {
-            color: #a0aec0;
-        }
-        .dark-mode .guess-box {
-            color: white;
+        .dark-mode .key {
+            background-color: #4a5568;
+            color: #ffffff;
         }
         .dark-mode .bg-gray-100 {
             background-color: #2d3748;
@@ -33,6 +28,9 @@
             position: absolute;
             top: 10px;
             right: 10px;
+        }
+        .key:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -299,6 +297,7 @@
         .key:hover {
             background-color: #cacaca;
             border-color: #a0a0a0;
+            transform: scale(1.1);
         }
 
         #guess {
