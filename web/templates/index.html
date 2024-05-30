@@ -84,6 +84,13 @@
             background-color: #2d3748;
             border-color: #a0aec0;
         }
+        .moving-gif {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            pointer-events: none;
+            z-index: -1;
+        }
     </style>
 </head>
 <body class="bg-gray-100 h-screen flex justify-center items-center">
@@ -173,6 +180,8 @@
             </div>
         </div>
     </div>
+
+    <img src="../static/images/dog.gif" alt="Moving GIF" class="moving-gif" id="movingGif">
 
     <script>
         var selectedLetter = '';
@@ -339,6 +348,40 @@
             document.body.classList.toggle('dark-mode');
             const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
             localStorage.setItem('theme', theme);
+        });
+
+        // DVD screensaver GIF movement logic
+        var gif = document.getElementById('movingGif');
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+        var x = Math.random() * (width - gif.clientWidth);
+        var y = Math.random() * (height - gif.clientHeight);
+        var vx = 2;
+        var vy = 2;
+
+        function moveGif() {
+            x += vx;
+            y += vy;
+
+            if (x + gif.clientWidth >= width || x <= 0) {
+                vx *= -1;
+            }
+
+            if (y + gif.clientHeight >= height || y <= 0) {
+                vy *= -1;
+            }
+
+            gif.style.left = x + 'px';
+            gif.style.top = y + 'px';
+
+            requestAnimationFrame(moveGif);
+        }
+
+        moveGif();
+
+        window.addEventListener('resize', () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
         });
     </script>
 
