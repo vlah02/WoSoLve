@@ -38,27 +38,32 @@ class WordleState:
             if plus_and_star_counts.get(letter, 0) < count:
                 self.available_chars = self.available_chars.replace(letter, '')
 
-        self.excluded_chars = set(minus_counts.keys()) - set(plus_and_star_counts.keys())
-
         for letter, count in plus_and_star_counts.items():
-            self.letter_counts[letter] = count
+            self.letter_counts[letter] = max(self.letter_counts.get(letter, 0), count)
 
     def is_valid_word(self, word):
-        if any(excluded_char in word for excluded_char in self.excluded_chars):
+        # Check excluded characters first
+        if any(letter in word for letter in self.excluded_chars):
             return False
 
+        # Check required characters
         for c in self.required_chars:
             if c not in word:
                 return False
 
-        for letter, count in self.letter_counts.items():
-            if word.count(letter) != count:
-                return False
-
+        # Check the green characters are in the correct positions
         for i, c in enumerate(word):
             if self.green_chars[i] != ' ' and self.green_chars[i] != c:
                 return False
-            if c in self.yellow_chars[i]:
+
+        # Check the yellow characters are in the word but not in the specified positions
+        for i, char_set in enumerate(self.yellow_chars):
+            if any(c == word[i] for c in char_set):
+                return False
+
+        # Check the count of required characters
+        for letter, count in self.letter_counts.items():
+            if word.count(letter) < count:
                 return False
 
         return True
@@ -98,22 +103,29 @@ def index():
     message = ""
     random_word = None
 
-    if 'state' in session:
-        state = state_from_dict(session['state'])
-    else:
+    word_list = []
+    with open("words/wordle-la.txt", "r") as la_file:
+        word_list.extend([word.strip() for word in la_file])
+    with open("words/wordle-ta.txt", "r") as ta_file:
+        word_list.extend([word.strip() for word in ta_file])
+
+    if 'state' not in session:
         state = WordleState()
+        session['state'] = state_to_dict(state)
+        random_word = random.choice(word_list)
+        session['random_word'] = random_word
+    else:
+        state = state_from_dict(session['state'])
+        random_word = session['random_word']
 
     if request.method == 'POST':
         guess = request.form.get('guess')
         if len(guess) == 10 and re.match("([a-z][\+\-\*]){5}", guess):
             state.update_state(guess)
-
-            with open("../web/words/wordle-la.txt", "r") as compare_file:
-                word_list = [word.strip() for word in compare_file]
-
             words = find_valid_words(word_list, state)
             if words:
                 random_word = random.choice(words)
+                session['random_word'] = random_word
         else:
             message = "ERROR: Incorrect format!"
 
@@ -125,6 +137,7 @@ def index():
 @app.route('/reset')
 def reset():
     session.pop('state', None)
+    session.pop('random_word', None)
     return redirect(url_for('index'))
 
 
