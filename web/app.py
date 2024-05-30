@@ -37,6 +37,7 @@ class WordleState:
         for letter, count in minus_counts.items():
             if plus_and_star_counts.get(letter, 0) < count:
                 self.available_chars = self.available_chars.replace(letter, '')
+                self.excluded_chars.add(letter)
 
         for letter, count in plus_and_star_counts.items():
             self.letter_counts[letter] = max(self.letter_counts.get(letter, 0), count)
@@ -66,6 +67,11 @@ class WordleState:
             if word.count(letter) < count:
                 return False
 
+        # Ensure that no excluded letter is present in the word
+        for letter in self.excluded_chars:
+            if letter in word:
+                return False
+
         return True
 
 
@@ -83,7 +89,8 @@ def state_to_dict(state):
         "green_chars": state.green_chars,
         "yellow_chars": [list(chars) for chars in state.yellow_chars],
         "required_chars": list(state.required_chars),
-        "letter_counts": state.letter_counts
+        "letter_counts": state.letter_counts,
+        "excluded_chars": list(state.excluded_chars)
     }
 
 
@@ -94,6 +101,7 @@ def state_from_dict(state_dict):
     state.yellow_chars = [set(chars) for chars in state_dict["yellow_chars"]]
     state.required_chars = set(state_dict["required_chars"])
     state.letter_counts = state_dict["letter_counts"]
+    state.excluded_chars = set(state_dict["excluded_chars"])
     return state
 
 
