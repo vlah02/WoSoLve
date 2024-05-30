@@ -121,36 +121,36 @@
 
                 <div id="keyboard" class="mt-4 space-y-2">
                     <div class="flex justify-center gap-2">
-                        <button class="key">Q</button>
-                        <button class="key">W</button>
-                        <button class="key">E</button>
-                        <button class="key">R</button>
-                        <button class="key">T</button>
-                        <button class="key">Y</button>
-                        <button class="key">U</button>
-                        <button class="key">I</button>
-                        <button class="key">O</button>
-                        <button class="key">P</button>
+                        <button class="key" data-key="q">Q</button>
+                        <button class="key" data-key="w">W</button>
+                        <button class="key" data-key="e">E</button>
+                        <button class="key" data-key="r">R</button>
+                        <button class="key" data-key="t">T</button>
+                        <button class="key" data-key="y">Y</button>
+                        <button class="key" data-key="u">U</button>
+                        <button class="key" data-key="i">I</button>
+                        <button class="key" data-key="o">O</button>
+                        <button class="key" data-key="p">P</button>
                     </div>
                     <div class="flex justify-center gap-2">
-                        <button class="key">A</button>
-                        <button class="key">S</button>
-                        <button class="key">D</button>
-                        <button class="key">F</button>
-                        <button class="key">G</button>
-                        <button class="key">H</button>
-                        <button class="key">J</button>
-                        <button class="key">K</button>
-                        <button class="key">L</button>
+                        <button class="key" data-key="a">A</button>
+                        <button class="key" data-key="s">S</button>
+                        <button class="key" data-key="d">D</button>
+                        <button class="key" data-key="f">F</button>
+                        <button class="key" data-key="g">G</button>
+                        <button class="key" data-key="h">H</button>
+                        <button class="key" data-key="j">J</button>
+                        <button class="key" data-key="k">K</button>
+                        <button class="key" data-key="l">L</button>
                     </div>
                     <div class="flex justify-center gap-2">
-                        <button class="key">Z</button>
-                        <button class="key">X</button>
-                        <button class="key">C</button>
-                        <button class="key">V</button>
-                        <button class="key">B</button>
-                        <button class="key">N</button>
-                        <button class="key">M</button>
+                        <button class="key" data-key="z">Z</button>
+                        <button class="key" data-key="x">X</button>
+                        <button class="key" data-key="c">C</button>
+                        <button class="key" data-key="v">V</button>
+                        <button class="key" data-key="b">B</button>
+                        <button class="key" data-key="n">N</button>
+                        <button class="key" data-key="m">M</button>
                     </div>
                 </div>
 
@@ -160,7 +160,7 @@
                     <button onclick="addColorToInput('-')" class="color-button bg-red-500"><i class="fas fa-times"></i></button>
                 </div>
 
-                <p class="text-sm text-gray-500 mt-3 text-center">{{ message }}</p>
+                <p id="errorMessage" class="text-sm text-gray-500 mt-3 text-center">{{ message }}</p>
                 {% if words %}
                     <div class="mt-6 h-48 overflow-y-auto">
                         <ul class="list-disc list-inside">
@@ -176,6 +176,7 @@
 
     <script>
         var selectedLetter = '';
+        var lastSelectedLetter = '';
 
         function addLetterToInput(letter, colorCode) {
             var guessContainer = document.getElementById('guessContainer');
@@ -223,9 +224,17 @@
             selectedLetter = letter;
             var colorPopup = document.getElementById('colorPopup');
 
+            if (letter === lastSelectedLetter && colorPopup.classList.contains('visible')) {
+                colorPopup.classList.remove('visible');
+                lastSelectedLetter = '';
+                return;
+            }
+
+            lastSelectedLetter = letter;
+
             if (event) {
                 var buttonRect = event.target.getBoundingClientRect();
-                colorPopup.style.top = `${buttonRect.top + window.scrollY - 5}px`;  // Adjusted the offset to be closer to the letter
+                colorPopup.style.top = `${buttonRect.top + window.scrollY - 5}px`;
                 colorPopup.style.left = `${buttonRect.left + buttonRect.width / 2 - colorPopup.offsetWidth / 2}px`;
                 colorPopup.style.transform = 'translateY(-100%)';
             }
@@ -233,9 +242,39 @@
             colorPopup.classList.add('visible');
         }
 
+        function chooseColorFromKey(letter, event) {
+            selectedLetter = letter;
+            var colorPopup = document.getElementById('colorPopup');
+
+            if (letter === lastSelectedLetter && colorPopup.classList.contains('visible')) {
+                colorPopup.classList.remove('visible');
+                lastSelectedLetter = '';
+                return;
+            }
+
+            lastSelectedLetter = letter;
+
+            var keyElement = document.querySelector(`.key[data-key="${letter}"]`);
+            if (keyElement) {
+                var buttonRect = keyElement.getBoundingClientRect();
+                colorPopup.style.top = `${buttonRect.top + window.scrollY - 5}px`;
+                colorPopup.style.left = `${buttonRect.left + buttonRect.width / 2 - colorPopup.offsetWidth / 2}px`;
+                colorPopup.style.transform = 'translateY(-100%)';
+
+                colorPopup.classList.add('visible');
+            }
+        }
+
         function addColorToInput(symbol) {
+            if (!selectedLetter) {
+                document.getElementById('errorMessage').textContent = "Please select a letter";
+                return;
+            }
             addLetterToInput(selectedLetter, symbol);
             document.getElementById('colorPopup').classList.remove('visible');
+            lastSelectedLetter = '';
+            selectedLetter = ''; // Clear selected letter after use
+            document.getElementById('errorMessage').textContent = ""; // Clear error message
         }
 
         window.addEventListener('keydown', function(event) {
@@ -245,10 +284,11 @@
 
             if (isPrintableChar) {
                 event.preventDefault();
-                chooseColor(key);
+                chooseColorFromKey(key, event);
             } else if (event.key.toLowerCase() === 'backspace') {
                 if (colorPopup.classList.contains('visible')) {
                     colorPopup.classList.remove('visible');
+                    lastSelectedLetter = '';
                 } else {
                     event.preventDefault();
                     removeLastLetter();
@@ -272,6 +312,8 @@
             var isClickInsideElement = colorPopup.contains(event.target) || event.target.classList.contains('key');
             if (!isClickInsideElement) {
                 colorPopup.classList.remove('visible');
+                lastSelectedLetter = '';
+                selectedLetter = ''; // Clear selected letter when clicking outside
             }
         });
 
