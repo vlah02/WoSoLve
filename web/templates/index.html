@@ -90,6 +90,13 @@
             height: 100px;
             pointer-events: none;
             z-index: -1;
+            display: none; /* Initially hide the GIF */
+        }
+        /* Disable text selection */
+        .no-select {
+            user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
         }
     </style>
 </head>
@@ -103,7 +110,7 @@
         <div class="w-full max-w-xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
             <div class="p-8">
                 <div class="flex justify-center mb-4">
-                    <h1 class="text-3xl font-bold text-gray-800">WoSoLve</h1>
+                    <h1 id="logo" class="text-3xl font-bold text-gray-800 cursor-pointer no-select">WoSoLve</h1>
                 </div>
 
                 <form method="post" class="flex flex-col items-center">
@@ -377,7 +384,17 @@
             requestAnimationFrame(moveGif);
         }
 
-        moveGif();
+        // Initialize counter and set up click event listener for the logo
+        let clickCount = 0;
+        const logo = document.getElementById('logo');
+
+        logo.addEventListener('click', () => {
+            clickCount += 1;
+            if (clickCount >= 15) {
+                gif.style.display = 'block';
+                moveGif();
+            }
+        });
 
         window.addEventListener('resize', () => {
             width = window.innerWidth;
