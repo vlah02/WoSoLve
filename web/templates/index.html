@@ -34,7 +34,9 @@
             top: 10px;
             right: 10px;
         }
-        .key:hover {
+        .key:hover, .button:hover {
+            background-color: #cacaca;
+            border-color: #a0a0a0;
             transform: scale(1.1);
         }
         .random-word-tooltip {
@@ -48,7 +50,7 @@
             border-radius: 8px;
             white-space: nowrap;
             z-index: 10;
-            top: 120%;
+            bottom: 120%;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -98,6 +100,41 @@
             -webkit-user-select: none;
             -ms-user-select: none;
         }
+        .keyboard-container {
+            overflow: visible;
+        }
+        .container-overflow-visible {
+            overflow: visible;
+        }
+        .button {
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border: 2px solid transparent;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            height: 2.5rem;
+        }
+        .key {
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border: 2px solid transparent;
+            border-radius: 0.375rem;
+            background-color: #e2e2e2;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body class="bg-gray-100 h-screen flex justify-center items-center">
@@ -106,34 +143,23 @@
             <i class="fas fa-moon"></i>
         </button>
     </div>
-    <div class="container mx-auto px-4">
-        <div class="w-full max-w-xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+    <div class="container mx-auto px-4 container-overflow-visible">
+        <div class="w-full max-w-xl mx-auto bg-white rounded-xl shadow-md overflow-visible">
             <div class="p-8">
                 <div class="flex justify-center mb-4">
                     <h1 id="logo" class="text-3xl font-bold text-gray-800 cursor-pointer no-select">WoSoLve</h1>
                 </div>
 
-                <form method="post" class="flex flex-col items-center">
+                <form id="guessForm" method="post" class="flex flex-col items-center">
                     <div class="flex items-center mb-4">
                         <label style="user-select: none;" class="text-sm font-medium text-gray-700 mr-3">Enter your guess:</label>
                         <div id="guessContainer" class="flex">
                         </div>
                         <input type="hidden" name="guess" id="hiddenGuess">
                     </div>
-                    <div class="flex justify-center space-x-4 mb-4">
-                        <div class="submit-button-container">
-                            <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700">Submit</button>
-                            {% if random_word %}
-                                <div class="random-word-tooltip">
-                                    Random word to try: {{ random_word }}
-                                </div>
-                            {% endif %}
-                        </div>
-                        <button type="button" onclick="window.location.href='/reset'" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:bg-red-700">Reset</button>
-                    </div>
                 </form>
 
-                <div id="keyboard" class="mt-4 space-y-2">
+                <div id="keyboard" class="mt-4 space-y-2 keyboard-container">
                     <div class="flex justify-center gap-2">
                         <button class="key" data-key="q">Q</button>
                         <button class="key" data-key="w">W</button>
@@ -158,6 +184,16 @@
                         <button class="key" data-key="l">L</button>
                     </div>
                     <div class="flex justify-center gap-2">
+                        <div class="submit-button-container">
+                            <button type="submit" form="guessForm" class="bg-indigo-600 text-white button hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            {% if random_word %}
+                                <div class="random-word-tooltip">
+                                    Random word to try: {{ random_word }}
+                                </div>
+                            {% endif %}
+                        </div>
                         <button class="key" data-key="z">Z</button>
                         <button class="key" data-key="x">X</button>
                         <button class="key" data-key="c">C</button>
@@ -165,6 +201,14 @@
                         <button class="key" data-key="b">B</button>
                         <button class="key" data-key="n">N</button>
                         <button class="key" data-key="m">M</button>
+                        <div class="flex submit-button-container">
+                            <button class="bg-gray-600 text-white button hover:bg-gray-700 focus:outline-none focus:bg-gray-700" id="backspace-key">⌫</button>
+                        </div>
+                    </div>
+                    <div class="flex justify-center gap-2 mt-12" style="margin-top: 1rem;">
+                        <button type="button" onclick="window.location.href='/reset'" class="bg-red-600 text-white button hover:bg-red-700 focus:outline-none focus:bg-red-700">
+                            <i class="fas fa-redo"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -337,6 +381,10 @@
             button.addEventListener('click', function(event) {
                 chooseColor(this.textContent.toLowerCase(), event);
             });
+        });
+
+        document.querySelector('#backspace-key').addEventListener('click', function() {
+            removeLastLetter();
         });
 
         document.querySelector('form').addEventListener('submit', function(event) {

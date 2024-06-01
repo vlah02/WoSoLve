@@ -54,7 +54,7 @@
       <workItem from="1717100168575" duration="35000" />
       <workItem from="1717198626079" duration="1859000" />
       <workItem from="1717232195772" duration="32000" />
-      <workItem from="1717236551682" duration="594000" />
+      <workItem from="1717236551682" duration="5633000" />
     </task>
     <servers />
   </component>
@@ -73,6 +73,6 @@
     </option>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/WoSoLve$app.coverage" NAME="app Coverage Results" MODIFIED="1717200083354" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/web" />
+    <SUITE FILE_PATH="coverage/WoSoLve$app.coverage" NAME="app Coverage Results" MODIFIED="1717243541929" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/web" />
   </component>
 </project>
