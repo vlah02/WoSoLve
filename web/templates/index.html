@@ -17,7 +17,7 @@
         .dark-mode .text-gray-800, .dark-mode .text-gray-700, .dark-mode .text-gray-500 {
             color: #ffffff;
         }
-        .dark-mode .key {
+        .dark-mode .key, .dark-mode #backspace-key {
             background-color: #4a5568;
             color: #ffffff;
         }
@@ -119,7 +119,7 @@
             font-weight: bold;
             height: 2.5rem;
         }
-        .key {
+        .key, #backspace-key {
             transition: all 0.3s ease;
             padding: 8px 12px;
             border: 2px solid transparent;
@@ -134,6 +134,19 @@
             font-weight: bold;
             text-align: center;
             font-size: 1rem;
+        }
+        .placeholder-box {
+            width: 2.5rem;
+            height: 2.5rem;
+            border: 2px solid #e2e2e2;
+            border-radius: 0.375rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 4px;
+            text-align: center;
+            font-size: 1.5rem;
+            color: #a0aec0;
         }
     </style>
 </head>
@@ -151,9 +164,14 @@
                 </div>
 
                 <form id="guessForm" method="post" class="flex flex-col items-center">
-                    <div class="flex items-center mb-4">
+                    <div class="flex items-center">
                         <label style="user-select: none;" class="text-sm font-medium text-gray-700 mr-3">Enter your guess:</label>
                         <div id="guessContainer" class="flex">
+                            <div class="placeholder-box"></div>
+                            <div class="placeholder-box"></div>
+                            <div class="placeholder-box"></div>
+                            <div class="placeholder-box"></div>
+                            <div class="placeholder-box"></div>
                         </div>
                         <input type="hidden" name="guess" id="hiddenGuess">
                     </div>
@@ -202,7 +220,7 @@
                         <button class="key" data-key="n">N</button>
                         <button class="key" data-key="m">M</button>
                         <div class="flex submit-button-container">
-                            <button class="bg-gray-600 text-white button hover:bg-gray-700 focus:outline-none focus:bg-gray-700" id="backspace-key">⌫</button>
+                            <button class="key" id="backspace-key">⌫</button>
                         </div>
                     </div>
                     <div class="flex justify-center gap-2 mt-12" style="margin-top: 1rem;">
@@ -242,12 +260,13 @@
             var guessContainer = document.getElementById('guessContainer');
             var hiddenGuess = document.getElementById('hiddenGuess');
 
-            if (guessContainer.children.length < 5) {
+            var placeholderBoxes = guessContainer.querySelectorAll('.placeholder-box');
+            if (guessContainer.children.length - placeholderBoxes.length < 5) {
                 var box = document.createElement('div');
                 box.classList.add('guess-box');
                 box.textContent = letter.toUpperCase();
                 applyColorToBox(box, colorCode);
-                guessContainer.appendChild(box);
+                guessContainer.replaceChild(box, placeholderBoxes[0]);
 
                 hiddenGuess.value += letter + colorCode;
             }
@@ -271,8 +290,12 @@
             var guessContainer = document.getElementById('guessContainer');
             var hiddenGuess = document.getElementById('hiddenGuess');
 
-            if (guessContainer.children.length > 0) {
-                guessContainer.removeChild(guessContainer.lastChild);
+            var guessBoxes = guessContainer.querySelectorAll('.guess-box');
+            if (guessBoxes.length > 0) {
+                var lastBox = guessBoxes[guessBoxes.length - 1];
+                var placeholderBox = document.createElement('div');
+                placeholderBox.classList.add('placeholder-box');
+                guessContainer.replaceChild(placeholderBox, lastBox);
 
                 if (hiddenGuess.value.length > 0) {
                     hiddenGuess.value = hiddenGuess.value.slice(0, -2);
@@ -480,7 +503,7 @@
             color: white;
         }
 
-        .key {
+        .key, #backspace-key {
             transition: all 0.3s ease;
             padding: 8px 12px;
             border: 2px solid transparent;
@@ -497,7 +520,7 @@
             font-size: 1rem;
         }
 
-        .key:hover {
+        .key:hover, #backspace-key:hover {
             background-color: #cacaca;
             border-color: #a0a0a0;
             transform: scale(1.1);
