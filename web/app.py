@@ -112,10 +112,13 @@ def index():
     random_word = None
 
     word_list = []
+    include_extended = False
+
     if request.method == 'POST':
         include_extended = request.form.get('includeExtended') == 'on'
+        session['include_extended'] = include_extended
     else:
-        include_extended = False
+        include_extended = session.get('include_extended', False)
 
     if include_extended:
         with open("words/wordle-la.txt", "r") as la_file:
@@ -146,13 +149,14 @@ def index():
 
     session['state'] = state_to_dict(state)
 
-    return render_template('index.html', words=words, message=message, random_word=random_word)
+    return render_template('index.html', words=words, message=message, random_word=random_word, include_extended=include_extended)
 
 
 @app.route('/reset')
 def reset():
     session.pop('state', None)
     session.pop('random_word', None)
+    session.pop('include_extended', None)
     return redirect(url_for('index'))
 
 

@@ -196,7 +196,7 @@
                         <input type="hidden" name="guess" id="hiddenGuess">
                     </div>
                     <div class="flex items-center">
-                        <input type="checkbox" id="includeExtended" name="includeExtended" class="mr-2">
+                        <input type="checkbox" id="includeExtended" name="includeExtended" class="mr-2" {% if include_extended %}checked{% endif %}>
                         <label for="includeExtended" class="text-sm font-medium text-gray-700">Include extended word list</label>
                     </div>
                 </form>
