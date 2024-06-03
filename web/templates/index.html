@@ -184,7 +184,7 @@
                 </div>
 
                 <form id="guessForm" method="post" class="flex flex-col items-center">
-                    <div class="flex items-center">
+                    <div class="flex items-center mb-4">
                         <label style="user-select: none;" class="text-sm font-medium text-gray-700 mr-3">Enter your guess:</label>
                         <div id="guessContainer" class="flex">
                             <div class="placeholder-box"></div>
@@ -194,6 +194,10 @@
                             <div class="placeholder-box"></div>
                         </div>
                         <input type="hidden" name="guess" id="hiddenGuess">
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="includeExtended" name="includeExtended" class="mr-2">
+                        <label for="includeExtended" class="text-sm font-medium text-gray-700">Include extended word list</label>
                     </div>
                 </form>
 

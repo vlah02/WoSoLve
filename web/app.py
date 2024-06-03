@@ -112,8 +112,15 @@ def index():
     random_word = None
 
     word_list = []
-    with open("words/wordle-la.txt", "r") as la_file:
-        word_list.extend([word.strip() for word in la_file])
+    if request.method == 'POST':
+        include_extended = request.form.get('includeExtended') == 'on'
+    else:
+        include_extended = False
+
+    if include_extended:
+        with open("words/wordle-la.txt", "r") as la_file:
+            word_list.extend([word.strip() for word in la_file])
+
     with open("words/wordle-ta.txt", "r") as ta_file:
         word_list.extend([word.strip() for word in ta_file])
 
