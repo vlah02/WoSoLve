@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device=width, initial-scale=1.0">
     <title>WoSoLve</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -34,7 +34,7 @@
             top: 10px;
             right: 10px;
         }
-        .key:hover, .button:hover {
+        .key:hover, .button:hover, .key.pressed, .key.selected {
             background-color: #cacaca;
             border-color: #a0a0a0;
             transform: scale(1.1);
@@ -69,7 +69,7 @@
             visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
             position: absolute;
-            background-color: #f8fafc;
+            background-color: #f8fafc; /* Add background color for light mode */
             border: 1px solid #e2e8f0;
             padding: 8px;
             border-radius: 8px;
@@ -148,6 +148,25 @@
             text-align: center;
             font-size: 1.5rem;
             color: #a0aec0;
+        }
+        .error-popup {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #f56565;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .error-popup.visible {
+            opacity: 1;
+            visibility: visible;
         }
     </style>
 </head>
@@ -237,7 +256,8 @@
                     <button onclick="addColorToInput('-')" class="color-button bg-red-500"><i class="fas fa-times"></i></button>
                 </div>
 
-                <p id="errorMessage" class="text-sm text-gray-500 mt-3 text-center">{{ message }}</p>
+                <div id="errorPopup" class="error-popup">ERROR: Incorrect format!</div>
+
                 {% if words %}
                     <div class="mt-6 h-48 overflow-y-auto">
                         <ul class="list-disc list-inside">
@@ -327,38 +347,55 @@
         }
 
         function chooseColorFromKey(letter, event) {
-            selectedLetter = letter;
             var colorPopup = document.getElementById('colorPopup');
-
-            if (letter === lastSelectedLetter && colorPopup.classList.contains('visible')) {
-                colorPopup.classList.remove('visible');
-                lastSelectedLetter = '';
-                return;
-            }
-
-            lastSelectedLetter = letter;
 
             var keyElement = document.querySelector(`.key[data-key="${letter}"]`);
             if (keyElement) {
-                var buttonRect = keyElement.getBoundingClientRect();
-                colorPopup.style.top = `${buttonRect.top + window.scrollY - 5}px`;
-                colorPopup.style.left = `${buttonRect.left + buttonRect.width / 2 - colorPopup.offsetWidth / 2}px`;
-                colorPopup.style.transform = 'translateY(-100%)';
+                if (keyElement.classList.contains('selected')) {
+                    keyElement.classList.remove('selected');
+                    colorPopup.classList.remove('visible');
+                    selectedLetter = ''; // Deselect the letter
+                } else {
+                    // Deselect previously selected key
+                    var previouslySelectedKey = document.querySelector('.key.selected');
+                    if (previouslySelectedKey) {
+                        previouslySelectedKey.classList.remove('selected');
+                    }
+                    selectedLetter = letter;
+                    keyElement.classList.add('selected');
 
-                colorPopup.classList.add('visible');
+                    var buttonRect = keyElement.getBoundingClientRect();
+                    colorPopup.style.top = `${buttonRect.top + window.scrollY - 5}px`;
+                    colorPopup.style.left = `${buttonRect.left + buttonRect.width / 2 - colorPopup.offsetWidth / 2}px`;
+                    colorPopup.style.transform = 'translateY(-100%)';
+
+                    colorPopup.classList.add('visible');
+                }
             }
         }
 
         function addColorToInput(symbol) {
             if (!selectedLetter) {
-                document.getElementById('errorMessage').textContent = "Please select a letter";
+                showErrorPopup("Please select a letter");
                 return;
             }
             addLetterToInput(selectedLetter, symbol);
             document.getElementById('colorPopup').classList.remove('visible');
+            var selectedKey = document.querySelector(`.key[data-key="${selectedLetter}"]`);
+            if (selectedKey) {
+                selectedKey.classList.remove('selected');
+            }
             lastSelectedLetter = '';
             selectedLetter = ''; // Clear selected letter after use
-            document.getElementById('errorMessage').textContent = ""; // Clear error message
+        }
+
+        function showErrorPopup(message) {
+            var errorPopup = document.getElementById('errorPopup');
+            errorPopup.textContent = message;
+            errorPopup.classList.add('visible');
+            setTimeout(() => {
+                errorPopup.classList.remove('visible');
+            }, 3000); // Hide after 3 seconds
         }
 
         window.addEventListener('keydown', function(event) {
@@ -398,12 +435,16 @@
                 colorPopup.classList.remove('visible');
                 lastSelectedLetter = '';
                 selectedLetter = ''; // Clear selected letter when clicking outside
+                var previouslySelectedKey = document.querySelector('.key.selected');
+                if (previouslySelectedKey) {
+                    previouslySelectedKey.classList.remove('selected');
+                }
             }
         });
 
         document.querySelectorAll('.key').forEach(button => {
             button.addEventListener('click', function(event) {
-                chooseColor(this.textContent.toLowerCase(), event);
+                chooseColorFromKey(this.textContent.toLowerCase(), event);
             });
         });
 
@@ -413,6 +454,10 @@
 
         document.querySelector('form').addEventListener('submit', function(event) {
             var guessValue = document.getElementById('hiddenGuess').value;
+            if (!guessValue.match(/^([a-z][\+\-\*]){5}$/)) {
+                event.preventDefault();
+                showErrorPopup("ERROR: Incorrect format!");
+            }
         });
 
         // Dark mode toggle
@@ -471,6 +516,15 @@
         window.addEventListener('resize', () => {
             width = window.innerWidth;
             height = window.innerHeight;
+        });
+
+        // Remove pressed effect when key is released
+        window.addEventListener('keyup', function(event) {
+            const key = event.key.toLowerCase();
+            const keyElement = document.querySelector(`.key[data-key="${key}"]`);
+            if (keyElement) {
+                keyElement.classList.remove('pressed');
+            }
         });
     </script>
 
@@ -543,7 +597,7 @@
             transform: translateX(-50%);
             padding: 4px;
             border-radius: 6px;
-            background-color: rgba(255, 255, 255, 0);
+            background-color: rgba(255, 255, 255, 1); /* Add background color for light mode */
         }
 
         .color-popup button {
@@ -591,12 +645,15 @@
 
         .color-button.bg-green-500:hover {
             background-color: #3a8b5e;
+            transform: scale(1.1); /* Add scale effect on hover */
         }
         .color-button.bg-yellow-500:hover {
             background-color: #d1a825;
+            transform: scale(1.1); /* Add scale effect on hover */
         }
         .color-button.bg-red-500:hover {
             background-color: #dc2626;
+            transform: scale(1.1); /* Add scale effect on hover */
         }
 
         .color-button i {
