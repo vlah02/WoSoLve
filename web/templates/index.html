@@ -304,12 +304,46 @@
             -webkit-user-select: none;
             -ms-user-select: none;
         }
+        @keyframes rotate-fade {
+            0% {
+                opacity: 1;
+                transform: rotate(0deg);
+            }
+            50% {
+                opacity: 0;
+                transform: rotate(180deg);
+            }
+            100% {
+                opacity: 1;
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes scale-fade {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .icon-transition-rotate {
+            animation: rotate-fade 0.5s ease-in-out;
+        }
+        .icon-transition-scale {
+            animation: scale-fade 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-gray-100 h-screen flex justify-center items-center">
     <div class="theme-toggle">
         <button id="theme-toggle" class="text-gray-500 focus:outline-none">
-            <i class="fas fa-moon"></i>
+            <i id="theme-icon" class="fas fa-moon"></i>
         </button>
     </div>
     <div class="container mx-auto px-4 container-overflow-visible">
@@ -612,16 +646,35 @@
         });
 
         const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
         const currentTheme = localStorage.getItem('theme') || 'light';
 
         if (currentTheme === 'dark') {
             document.body.classList.add('dark-mode');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
         }
 
         themeToggleBtn.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
             localStorage.setItem('theme', theme);
+
+            if (theme === 'dark') {
+                themeIcon.classList.add('icon-transition-rotate');
+                setTimeout(() => {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                    themeIcon.classList.remove('icon-transition-rotate');
+                }, 250);
+            } else {
+                themeIcon.classList.add('icon-transition-scale');
+                setTimeout(() => {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                    themeIcon.classList.remove('icon-transition-scale');
+                }, 250);
+            }
         });
 
         var gif = document.getElementById('movingGif');
