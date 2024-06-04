@@ -168,6 +168,34 @@
             opacity: 1;
             visibility: visible;
         }
+        .custom-checkbox {
+            display: inline-block;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 0.25rem;
+            border: 2px solid #4a5568;
+            background-color: #f8fafc;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .custom-checkbox.checked {
+            background-color: #4a5568;
+            border-color: #4a5568;
+            transform: rotate(360deg);
+        }
+        .custom-checkbox.checked::after {
+            content: '';
+            display: block;
+            width: 0.625rem;
+            height: 0.625rem;
+            border-radius: 0.125rem;
+            background-color: #ffffff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
     </style>
 </head>
 <body class="bg-gray-100 h-screen flex justify-center items-center">
@@ -196,7 +224,10 @@
                         <input type="hidden" name="guess" id="hiddenGuess">
                     </div>
                     <div class="flex items-center">
-                        <input type="checkbox" id="includeExtended" name="includeExtended" class="mr-2" {% if include_extended %}checked{% endif %}>
+                        <div class="custom-checkbox-container mr-2">
+                            <div class="custom-checkbox" id="customCheckbox"></div>
+                            <input type="checkbox" id="includeExtended" name="includeExtended" class="hidden" {% if include_extended %}checked{% endif %}>
+                        </div>
                         <label for="includeExtended" class="text-sm font-medium text-gray-700">Include extended word list</label>
                     </div>
                 </form>
@@ -530,6 +561,20 @@
                 keyElement.classList.remove('pressed');
             }
         });
+
+        // Custom checkbox toggle logic
+        const customCheckbox = document.getElementById('customCheckbox');
+        const hiddenCheckbox = document.getElementById('includeExtended');
+
+        customCheckbox.addEventListener('click', () => {
+            customCheckbox.classList.toggle('checked');
+            hiddenCheckbox.checked = !hiddenCheckbox.checked;
+        });
+
+        // Initialize custom checkbox state
+        if (hiddenCheckbox.checked) {
+            customCheckbox.classList.add('checked');
+        }
     </script>
 
     <style>
