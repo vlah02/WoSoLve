@@ -338,6 +338,49 @@
         .icon-transition-scale {
             animation: scale-fade 0.5s ease-in-out;
         }
+        .footer-text {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            color: #4a5568;
+        }
+        .dark-mode .footer-text {
+            color: #a0aec0;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 500px;
+            text-align: left;
+        }
+        .dark-mode .modal-content {
+            background: #2d3748;
+            color: #a0aec0;
+        }
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="bg-gray-100 h-screen flex justify-center items-center">
@@ -446,6 +489,24 @@
                     </div>
                 {% endif %}
             </div>
+        </div>
+    </div>
+
+    <div class="footer-text">
+        <span id="howToPlay" class="cursor-pointer">How to play?</span>
+    </div>
+
+    <div id="howToPlayModal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeModal()">&times;</button>
+            <h2 class="text-xl font-bold mb-4">How to play?</h2>
+            <p>
+                Use your keyboard (or select a letter on screen) to make guesses:<br>
+                After typing a letter, press 1 for correct position, 2 for wrong position, and 3 for incorrect letter<br>
+                Press ESC to reset the page<br>
+                Press ENTER to submit your answer<br>
+                Press BACKSPACE to remove a letter from your guess
+            </p>
         </div>
     </div>
 
@@ -739,6 +800,20 @@
         if (localStorage.getItem('includeExtended') === 'true') {
             customCheckbox.classList.add('checked');
             hiddenCheckbox.checked = true;
+        }
+
+        document.getElementById('howToPlay').addEventListener('click', function() {
+            const modal = document.getElementById('howToPlayModal');
+            modal.style.display = 'flex';
+            if (document.body.classList.contains('dark-mode')) {
+                modal.querySelector('.modal-content').classList.add('dark-mode');
+            } else {
+                modal.querySelector('.modal-content').classList.remove('dark-mode');
+            }
+        });
+
+        function closeModal() {
+            document.getElementById('howToPlayModal').style.display = 'none';
         }
     </script>
 
