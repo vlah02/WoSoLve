@@ -42,7 +42,7 @@
         .random-word-tooltip {
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
             position: absolute;
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -67,7 +67,7 @@
         .color-popup {
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
             position: absolute;
             background-color: #f8fafc; /* Add background color for light mode */
             border: 1px solid #e2e8f0;
@@ -120,7 +120,7 @@
             height: 2.5rem;
         }
         .key, #backspace-key {
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             padding: 8px 12px;
             border: 2px solid transparent;
             border-radius: 0.375rem;
@@ -148,6 +148,124 @@
             text-align: center;
             font-size: 1.5rem;
             color: #a0aec0;
+            opacity: 1;
+        }
+        .guess-box {
+            width: 2.5rem;
+            height: 2.5rem;
+            border: 2px solid transparent;
+            border-radius: 0.375rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            margin: 4px;
+            text-align: center;
+            font-size: 1.5rem;
+            cursor: default;
+            color: white;
+            opacity: 1;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .guess-box[data-color="+"] {
+            color: white;
+        }
+        .guess-box[data-color="*"] {
+            color: white;
+        }
+        .guess-box[data-color="-"] {
+            color: white;
+        }
+        .key, #backspace-key {
+            transition: all 0.2s ease;
+            padding: 8px 12px;
+            border: 2px solid transparent;
+            border-radius: 0.375rem;
+            background-color: #e2e2e2;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1rem;
+            user-select: none; /* Prevent text selection */
+        }
+        .key:hover, #backspace-key:hover {
+            background-color: #cacaca;
+            border-color: #a0a0a0;
+            transform: scale(1.1);
+        }
+        #guess {
+            pointer-events: none;
+        }
+        .color-popup {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: center;
+            gap: 1px;
+            position: absolute;
+            transform: translateX(-50%);
+            padding: 4px;
+            border-radius: 6px;
+            background-color: rgba(255, 255, 255, 1); /* Add background color for light mode */
+        }
+        .color-popup button {
+            margin: 0 5px;
+        }
+        .color-button {
+            padding: 8px 12px;
+            margin: 4px;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        .color-popup.hidden {
+            display: none;
+        }
+        .color-button {
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border: 2px solid transparent;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            text-align: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 4px;
+            font-size: 1.5rem;
+            color: white;
+        }
+        .color-button.bg-green-500 {
+            background-color: #48bb78;
+        }
+        .color-button.bg-yellow-500 {
+            background-color: #ecc94b;
+        }
+        .color-button.bg-red-500 {
+            background-color: #f56565;
+        }
+        .color-button.bg-green-500:hover {
+            background-color: #3a8b5e;
+            transform: scale(1.1); /* Add scale effect on hover */
+        }
+        .color-button.bg-yellow-500:hover {
+            background-color: #d1a825;
+            transform: scale(1.1); /* Add scale effect on hover */
+        }
+        .color-button.bg-red-500:hover {
+            background-color: #dc2626;
+            transform: scale(1.1); /* Add scale effect on hover */
+        }
+        .color-button i {
+            pointer-events: none;
         }
         .error-popup {
             position: fixed;
@@ -162,7 +280,7 @@
             z-index: 50;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
         }
         .error-popup.visible {
             opacity: 1;
@@ -324,6 +442,11 @@
                 applyColorToBox(box, colorCode);
                 guessContainer.replaceChild(box, placeholderBoxes[0]);
 
+                box.style.opacity = 0;
+                requestAnimationFrame(() => {
+                    box.style.opacity = 1;
+                });
+
                 hiddenGuess.value += letter + colorCode;
             }
         }
@@ -349,9 +472,12 @@
             var guessBoxes = guessContainer.querySelectorAll('.guess-box');
             if (guessBoxes.length > 0) {
                 var lastBox = guessBoxes[guessBoxes.length - 1];
-                var placeholderBox = document.createElement('div');
-                placeholderBox.classList.add('placeholder-box');
-                guessContainer.replaceChild(placeholderBox, lastBox);
+                lastBox.style.opacity = 0;
+                lastBox.addEventListener('transitionend', function() {
+                    var placeholderBox = document.createElement('div');
+                    placeholderBox.classList.add('placeholder-box');
+                    guessContainer.replaceChild(placeholderBox, lastBox);
+                });
 
                 if (hiddenGuess.value.length > 0) {
                     hiddenGuess.value = hiddenGuess.value.slice(0, -2);
@@ -430,7 +556,7 @@
             errorPopup.classList.add('visible');
             setTimeout(() => {
                 errorPopup.classList.remove('visible');
-            }, 3000); // Hide after 3 seconds
+            }, 2000); // Hide after 2 seconds
         }
 
         window.addEventListener('keydown', function(event) {
@@ -579,7 +705,7 @@
 
     <style>
         .guess-box {
-            transition: all 0.3s ease;
+            transition: all 0.2s ease-in-out;
             width: 2.5rem;
             height: 2.5rem;
             border: 2px solid transparent;
@@ -608,7 +734,7 @@
         }
 
         .key, #backspace-key {
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             padding: 8px 12px;
             border: 2px solid transparent;
             border-radius: 0.375rem;
