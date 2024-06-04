@@ -695,11 +695,13 @@
         customCheckbox.addEventListener('click', () => {
             customCheckbox.classList.toggle('checked');
             hiddenCheckbox.checked = !hiddenCheckbox.checked;
+            localStorage.setItem('includeExtended', hiddenCheckbox.checked);
         });
 
         // Initialize custom checkbox state
-        if (hiddenCheckbox.checked) {
+        if (localStorage.getItem('includeExtended') === 'true') {
             customCheckbox.classList.add('checked');
+            hiddenCheckbox.checked = true;
         }
     </script>
 
