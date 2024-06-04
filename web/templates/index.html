@@ -359,6 +359,10 @@
             display: none;
             justify-content: center;
             align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal.fade-out {
+            animation: fadeOut 0.5s ease;
         }
         .modal-content {
             background: white;
@@ -367,10 +371,24 @@
             width: 80%;
             max-width: 500px;
             text-align: left;
+            animation: slideIn 0.5s ease;
+            position: relative;
         }
         .dark-mode .modal-content {
             background: #2d3748;
             color: #a0aec0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-50px); }
+            to { transform: translateY(0); }
         }
         .close-button {
             position: absolute;
@@ -804,7 +822,11 @@
 
         document.getElementById('howToPlay').addEventListener('click', function() {
             const modal = document.getElementById('howToPlayModal');
+            modal.classList.remove('fade-out');
             modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
             if (document.body.classList.contains('dark-mode')) {
                 modal.querySelector('.modal-content').classList.add('dark-mode');
             } else {
@@ -813,7 +835,12 @@
         });
 
         function closeModal() {
-            document.getElementById('howToPlayModal').style.display = 'none';
+            const modal = document.getElementById('howToPlayModal');
+            modal.classList.add('fade-out');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modal.classList.remove('fade-out');
+            }, 300);
         }
     </script>
 
