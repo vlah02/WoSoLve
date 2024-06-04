@@ -69,7 +69,7 @@
             visibility: hidden;
             transition: opacity 0.2s ease, visibility 0.2s ease;
             position: absolute;
-            background-color: #f8fafc; /* Add background color for light mode */
+            background-color: #f8fafc;
             border: 1px solid #e2e8f0;
             padding: 8px;
             border-radius: 8px;
@@ -92,9 +92,8 @@
             height: 100px;
             pointer-events: none;
             z-index: -1;
-            display: none; /* Initially hide the GIF */
+            display: none;
         }
-        /* Disable text selection */
         .no-select {
             user-select: none;
             -webkit-user-select: none;
@@ -134,7 +133,7 @@
             font-weight: bold;
             text-align: center;
             font-size: 1rem;
-            user-select: none; /* Prevent text selection */
+            user-select: none;
         }
         .placeholder-box {
             width: 2.5rem;
@@ -151,6 +150,7 @@
             opacity: 1;
         }
         .guess-box {
+            transition: all 0.2s ease-in-out;
             width: 2.5rem;
             height: 2.5rem;
             border: 2px solid transparent;
@@ -164,8 +164,6 @@
             font-size: 1.5rem;
             cursor: default;
             color: white;
-            opacity: 1;
-            transition: opacity 0.2s ease-in-out;
         }
         .guess-box[data-color="+"] {
             color: white;
@@ -175,23 +173,6 @@
         }
         .guess-box[data-color="-"] {
             color: white;
-        }
-        .key, #backspace-key {
-            transition: all 0.2s ease;
-            padding: 8px 12px;
-            border: 2px solid transparent;
-            border-radius: 0.375rem;
-            background-color: #e2e2e2;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 2.5rem;
-            height: 2.5rem;
-            font-weight: bold;
-            text-align: center;
-            font-size: 1rem;
-            user-select: none; /* Prevent text selection */
         }
         .key:hover, #backspace-key:hover {
             background-color: #cacaca;
@@ -212,7 +193,7 @@
             transform: translateX(-50%);
             padding: 4px;
             border-radius: 6px;
-            background-color: rgba(255, 255, 255, 1); /* Add background color for light mode */
+            background-color: rgba(255, 255, 255, 1);
         }
         .color-popup button {
             margin: 0 5px;
@@ -254,15 +235,15 @@
         }
         .color-button.bg-green-500:hover {
             background-color: #3a8b5e;
-            transform: scale(1.1); /* Add scale effect on hover */
+            transform: scale(1.1);
         }
         .color-button.bg-yellow-500:hover {
             background-color: #d1a825;
-            transform: scale(1.1); /* Add scale effect on hover */
+            transform: scale(1.1);
         }
         .color-button.bg-red-500:hover {
             background-color: #dc2626;
-            transform: scale(1.1); /* Add scale effect on hover */
+            transform: scale(1.1);
         }
         .color-button i {
             pointer-events: none;
@@ -296,6 +277,8 @@
             position: relative;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.3s ease;
+            vertical-align: middle;
+            margin-right: 0.5rem;
         }
         .custom-checkbox.checked {
             background-color: #4a5568;
@@ -314,6 +297,13 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+        .custom-checkbox-label {
+            display: inline-block;
+            vertical-align: middle;
+            user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
     </style>
 </head>
 <body class="bg-gray-100 h-screen flex justify-center items-center">
@@ -324,13 +314,13 @@
     </div>
     <div class="container mx-auto px-4 container-overflow-visible">
         <div class="w-full max-w-xl mx-auto bg-white rounded-xl shadow-md overflow-visible">
-            <div class="p-8">
+            <div class="p-6">
                 <div class="flex justify-center mb-4">
                     <h1 id="logo" class="text-3xl font-bold text-gray-800 cursor-pointer no-select">WoSoLve</h1>
                 </div>
 
                 <form id="guessForm" method="post" class="flex flex-col items-center">
-                    <div class="flex items-center mb-4">
+                    <div class="flex items-center mb-1">
                         <label style="user-select: none;" class="text-sm font-medium text-gray-700 mr-3">Enter your guess:</label>
                         <div id="guessContainer" class="flex">
                             <div class="placeholder-box"></div>
@@ -342,11 +332,12 @@
                         <input type="hidden" name="guess" id="hiddenGuess">
                     </div>
                     <div class="flex items-center">
-                        <div class="custom-checkbox-container mr-2">
+                        <div class="custom-checkbox-container">
                             <div class="custom-checkbox" id="customCheckbox"></div>
                             <input type="checkbox" id="includeExtended" name="includeExtended" class="hidden" {% if include_extended %}checked{% endif %}>
+
+                        <label for="includeExtended" class="text-sm font-medium text-gray-700 custom-checkbox-label">Include extended word list</label>
                         </div>
-                        <label for="includeExtended" class="text-sm font-medium text-gray-700">Include extended word list</label>
                     </div>
                 </form>
 
@@ -515,9 +506,8 @@
                 if (keyElement.classList.contains('selected')) {
                     keyElement.classList.remove('selected');
                     colorPopup.classList.remove('visible');
-                    selectedLetter = ''; // Deselect the letter
+                    selectedLetter = '';
                 } else {
-                    // Deselect previously selected key
                     var previouslySelectedKey = document.querySelector('.key.selected');
                     if (previouslySelectedKey) {
                         previouslySelectedKey.classList.remove('selected');
@@ -547,7 +537,7 @@
                 selectedKey.classList.remove('selected');
             }
             lastSelectedLetter = '';
-            selectedLetter = ''; // Clear selected letter after use
+            selectedLetter = '';
         }
 
         function showErrorPopup(message) {
@@ -556,7 +546,7 @@
             errorPopup.classList.add('visible');
             setTimeout(() => {
                 errorPopup.classList.remove('visible');
-            }, 2000); // Hide after 2 seconds
+            }, 2000);
         }
 
         window.addEventListener('keydown', function(event) {
@@ -595,7 +585,7 @@
             if (!isClickInsideElement) {
                 colorPopup.classList.remove('visible');
                 lastSelectedLetter = '';
-                selectedLetter = ''; // Clear selected letter when clicking outside
+                selectedLetter = '';
                 var previouslySelectedKey = document.querySelector('.key.selected');
                 if (previouslySelectedKey) {
                     previouslySelectedKey.classList.remove('selected');
@@ -621,7 +611,6 @@
             }
         });
 
-        // Dark mode toggle
         const themeToggleBtn = document.getElementById('theme-toggle');
         const currentTheme = localStorage.getItem('theme') || 'light';
 
@@ -635,7 +624,6 @@
             localStorage.setItem('theme', theme);
         });
 
-        // DVD screensaver GIF movement logic
         var gif = document.getElementById('movingGif');
         var width = window.innerWidth;
         var height = window.innerHeight;
@@ -662,7 +650,6 @@
             requestAnimationFrame(moveGif);
         }
 
-        // Initialize counter and set up click event listener for the logo
         let clickCount = 0;
         const logo = document.getElementById('logo');
 
@@ -679,7 +666,6 @@
             height = window.innerHeight;
         });
 
-        // Remove pressed effect when key is released
         window.addEventListener('keyup', function(event) {
             const key = event.key.toLowerCase();
             const keyElement = document.querySelector(`.key[data-key="${key}"]`);
@@ -688,7 +674,6 @@
             }
         });
 
-        // Custom checkbox toggle logic
         const customCheckbox = document.getElementById('customCheckbox');
         const hiddenCheckbox = document.getElementById('includeExtended');
 
@@ -698,145 +683,11 @@
             localStorage.setItem('includeExtended', hiddenCheckbox.checked);
         });
 
-        // Initialize custom checkbox state
         if (localStorage.getItem('includeExtended') === 'true') {
             customCheckbox.classList.add('checked');
             hiddenCheckbox.checked = true;
         }
     </script>
 
-    <style>
-        .guess-box {
-            transition: all 0.2s ease-in-out;
-            width: 2.5rem;
-            height: 2.5rem;
-            border: 2px solid transparent;
-            border-radius: 0.375rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            margin: 4px;
-            text-align: center;
-            font-size: 1.5rem;
-            cursor: default;
-            color: white;
-        }
-
-        .guess-box[data-color="+"] {
-            color: white;
-        }
-
-        .guess-box[data-color="*"] {
-            color: white;
-        }
-
-        .guess-box[data-color="-"] {
-            color: white;
-        }
-
-        .key, #backspace-key {
-            transition: all 0.2s ease;
-            padding: 8px 12px;
-            border: 2px solid transparent;
-            border-radius: 0.375rem;
-            background-color: #e2e2e2;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 2.5rem;
-            height: 2.5rem;
-            font-weight: bold;
-            text-align: center;
-            font-size: 1rem;
-            user-select: none; /* Prevent text selection */
-        }
-
-        .key:hover, #backspace-key:hover {
-            background-color: #cacaca;
-            border-color: #a0a0a0;
-            transform: scale(1.1);
-        }
-
-        #guess {
-            pointer-events: none;
-        }
-
-        .color-popup {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: nowrap;
-            justify-content: center;
-            align-items: center;
-            gap: 1px;
-            position: absolute;
-            transform: translateX(-50%);
-            padding: 4px;
-            border-radius: 6px;
-            background-color: rgba(255, 255, 255, 1); /* Add background color for light mode */
-        }
-
-        .color-popup button {
-            margin: 0 5px;
-        }
-
-        .color-button {
-            padding: 8px 12px;
-            margin: 4px;
-            border: none;
-            color: white;
-            cursor: pointer;
-        }
-
-        .color-popup.hidden {
-            display: none;
-        }
-
-        .color-button {
-            transition: all 0.3s ease;
-            padding: 8px 12px;
-            border: 2px solid transparent;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            text-align: center;
-            width: 2.5rem;
-            height: 2.5rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 4px;
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        .color-button.bg-green-500 {
-            background-color: #48bb78;
-        }
-        .color-button.bg-yellow-500 {
-            background-color: #ecc94b;
-        }
-        .color-button.bg-red-500 {
-            background-color: #f56565;
-        }
-
-        .color-button.bg-green-500:hover {
-            background-color: #3a8b5e;
-            transform: scale(1.1); /* Add scale effect on hover */
-        }
-        .color-button.bg-yellow-500:hover {
-            background-color: #d1a825;
-            transform: scale(1.1); /* Add scale effect on hover */
-        }
-        .color-button.bg-red-500:hover {
-            background-color: #dc2626;
-            transform: scale(1.1); /* Add scale effect on hover */
-        }
-
-        .color-button i {
-            pointer-events: none;
-        }
-
-    </style>
 </body>
 </html>
