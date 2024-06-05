@@ -430,7 +430,31 @@
         .dark-mode ::-webkit-scrollbar-thumb:hover {
             background: #2c5282;
         }
+        /* Compact results styling */
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        .results-container li {
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.875rem;
+            text-align: center;
+            list-style: none;
+        }
+        .dark-mode .results-container li {
+            background-color: #4a5568;
+            color: #ffffff;
+        }
     </style>
+
+
+
 
 </head>
 <body class="bg-gray-100 h-screen flex justify-center items-center">
@@ -530,14 +554,14 @@
                 <div id="errorPopup" class="error-popup">ERROR: Incorrect format!</div>
 
                 {% if words %}
-                    <div class="mt-6 h-48 overflow-y-auto">
-                        <ul class="list-disc list-inside">
+                    <div class="mt-2 results-container">
                         {% for word in words %}
-                            <li class="text-gray-700">{{ word }}</li>
+                            <li>{{ word }}</li>
                         {% endfor %}
-                        </ul>
                     </div>
                 {% endif %}
+
+
             </div>
         </div>
     </div>
