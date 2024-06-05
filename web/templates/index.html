@@ -407,7 +407,31 @@
             font-size: 20px;
             cursor: pointer;
         }
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .dark-mode ::-webkit-scrollbar-track {
+            background: #2d3748;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        .dark-mode ::-webkit-scrollbar-thumb {
+            background: #4a5568;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .dark-mode ::-webkit-scrollbar-thumb:hover {
+            background: #2c5282;
+        }
     </style>
+
 </head>
 <body class="bg-gray-100 h-screen flex justify-center items-center">
     <div class="theme-toggle">
