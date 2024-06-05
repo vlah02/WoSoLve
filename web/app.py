@@ -43,31 +43,25 @@ class WordleState:
             self.letter_counts[letter] = max(self.letter_counts.get(letter, 0), count)
 
     def is_valid_word(self, word):
-        # Check excluded characters first
         if any(letter in word for letter in self.excluded_chars):
             return False
 
-        # Check required characters
         for c in self.required_chars:
             if c not in word:
                 return False
 
-        # Check the green characters are in the correct positions
         for i, c in enumerate(word):
             if self.green_chars[i] != ' ' and self.green_chars[i] != c:
                 return False
 
-        # Check the yellow characters are in the word but not in the specified positions
         for i, char_set in enumerate(self.yellow_chars):
             if any(c == word[i] for c in char_set):
                 return False
 
-        # Check the count of required characters
         for letter, count in self.letter_counts.items():
             if word.count(letter) < count:
                 return False
 
-        # Ensure that no excluded letter is present in the word
         for letter in self.excluded_chars:
             if letter in word:
                 return False
