@@ -57,6 +57,21 @@ function removeLastLetter() {
     }
 }
 
+function handleBackspace() {
+    var colorPopup = document.getElementById('colorPopup');
+    if (colorPopup.classList.contains('visible')) {
+        colorPopup.classList.remove('visible');
+        var selectedKey = document.querySelector('.key.selected');
+        if (selectedKey) {
+            selectedKey.classList.remove('selected');
+        }
+        lastSelectedLetter = '';
+        selectedLetter = '';
+    } else {
+        removeLastLetter();
+    }
+}
+
 function chooseColor(letter, event) {
     selectedLetter = letter;
     var colorPopup = document.getElementById('colorPopup');
@@ -133,19 +148,13 @@ function showErrorPopup(message) {
 window.addEventListener('keydown', function(event) {
     const key = event.key.toLowerCase();
     const isPrintableChar = key.length === 1 && /[a-z]/i.test(key);
-    var colorPopup = document.getElementById('colorPopup');
 
     if (isPrintableChar) {
         event.preventDefault();
         chooseColorFromKey(key, event);
     } else if (event.key.toLowerCase() === 'backspace') {
-        if (colorPopup.classList.contains('visible')) {
-            colorPopup.classList.remove('visible');
-            lastSelectedLetter = '';
-        } else {
-            event.preventDefault();
-            removeLastLetter();
-        }
+        event.preventDefault();
+        handleBackspace();
     } else if (key === 'enter') {
         event.preventDefault();
         document.querySelector('[type="submit"]').click();
@@ -181,7 +190,7 @@ document.querySelectorAll('.key').forEach(button => {
 });
 
 document.querySelector('#backspace-key').addEventListener('click', function() {
-    removeLastLetter();
+    handleBackspace();
 });
 
 document.querySelector('form').addEventListener('submit', function(event) {
